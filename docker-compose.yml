@@ -1,0 +1,100 @@
+---
+x-airflow-common:
+  environment:
+    &airflow-common-environment
+    AIRFLOW_FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+    AIRFLOW_SECRET_KEY: a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08=
+    AIRFLOW_EXECUTOR: CeleryExecutor
+    AIRFLOW_DATABASE_NAME: airflow
+    AIRFLOW_DATABASE_USERNAME: airflow
+    AIRFLOW_DATABASE_PASSWORD: airflow_bitnami
+    AIRFLOW_WEBSERVER_HOST: airflow
+    AIRFLOW_LOAD_EXAMPLES: no
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: Asia/Ho_Chi_Minh
+    AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: Asia/Ho_Chi_Minh
+  volumes:
+    &airflow-common-volumes
+    - ${PROJECT_DIR:-.}/dags:/opt/bitnami/airflow/dags
+    - ${PROJECT_DIR:-.}/logs:/opt/bitnami/airflow/logs
+    - ${PROJECT_DIR:-.}/plugins:/opt/bitnami/airflow/plugins
+  depends_on:
+    &airflow-common-dependencies
+    postgresql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+version: '3.8'
+services:
+  postgresql:
+    image: bitnami/postgresql:17.0.0-debian-12-r2
+    environment:
+      POSTGRESQL_DATABASE: airflow
+      POSTGRESQL_USERNAME: airflow
+      POSTGRESQL_PASSWORD: airflow_bitnami
+    user: '0:0'
+    ports:
+      - '5432:5432'
+    volumes:
+      - ${PROJECT_DIR:-.}/data/postgresql:/bitnami/postgresql
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U" ,"$${POSTGRESQL_USERNAME}", "-d", "$${POSTGRESQL_DATABASE}" ]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+  redis:
+    image: bitnami/redis:6.2.16-debian-12-r0
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    user: '0:0'
+    ports:
+      - '6379:6379'
+    volumes:
+      - ${PROJECT_DIR:-.}/data/redis:/bitnami/redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+  airflow-worker:
+    image: bitnami/airflow-worker:2.10.2-debian-12-r0
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+    environment:
+      <<: *airflow-common-environment
+    user: '${AIRFLOW_UID:-50000}:0'
+    volumes: *airflow-common-volumes
+    depends_on:
+      <<: *airflow-common-dependencies
+  airflow-scheduler:
+    image: bitnami/airflow-scheduler:2.10.2-debian-12-r0
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+    environment:
+      <<: *airflow-common-environment
+    user: '${AIRFLOW_UID:-50000}:0'
+    volumes: *airflow-common-volumes
+    depends_on:
+      <<: *airflow-common-dependencies
+  airflow:
+    image: bitnami/airflow:2.10.2-debian-12-r0
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+    environment:
+      <<: *airflow-common-environment
+      AIRFLOW_PASSWORD: harry@2024
+      AIRFLOW_USERNAME: harry
+      AIRFLOW_EMAIL: harrytran001221@gmail.com
+    ports:
+      - '8080:8080'
+    user: '${AIRFLOW_UID:-50000}:0'
+    volumes: *airflow-common-volumes
+    depends_on:
+      <<: *airflow-common-dependencies

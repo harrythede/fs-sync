@@ -1,5 +1,11 @@
 ---
 x-airflow-common:
+  &airflow-common
+  deploy:
+    &airflow-common-deployment
+    restart_policy:
+      condition: on-failure
+      delay: 30s
   environment:
     &airflow-common-environment
     AIRFLOW_FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
@@ -10,8 +16,10 @@ x-airflow-common:
     AIRFLOW_DATABASE_PASSWORD: airflow_bitnami
     AIRFLOW_WEBSERVER_HOST: airflow
     AIRFLOW_LOAD_EXAMPLES: no
+    AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
     AIRFLOW__CORE__DEFAULT_TIMEZONE: Asia/Ho_Chi_Minh
     AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: Asia/Ho_Chi_Minh
+  user: '${AIRFLOW_UID:-50000}:0'
   volumes:
     &airflow-common-volumes
     - ${PROJECT_DIR:-.}/dags:/opt/bitnami/airflow/dags
@@ -57,44 +65,19 @@ services:
       timeout: 30s
       retries: 50
   airflow-worker:
+    <<: *airflow-common
     image: bitnami/airflow-worker:2.10.2-debian-12-r0
     deploy:
+      <<: *airflow-common-deployment
       replicas: 2
-      restart_policy:
-        condition: on-failure
-        delay: 30s
-    environment:
-      <<: *airflow-common-environment
-    user: '${AIRFLOW_UID:-50000}:0'
-    volumes: *airflow-common-volumes
-    depends_on:
-      <<: *airflow-common-dependencies
   airflow-scheduler:
+    <<: *airflow-common
     image: bitnami/airflow-scheduler:2.10.2-debian-12-r0
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 30s
-    environment:
-      <<: *airflow-common-environment
-    user: '${AIRFLOW_UID:-50000}:0'
-    volumes: *airflow-common-volumes
-    depends_on:
-      <<: *airflow-common-dependencies
   airflow:
+    <<: *airflow-common
     image: bitnami/airflow:2.10.2-debian-12-r0
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 30s
     environment:
       <<: *airflow-common-environment
       AIRFLOW_PASSWORD: harry@2024
       AIRFLOW_USERNAME: harry
       AIRFLOW_EMAIL: harrytran001221@gmail.com
-    ports:
-      - '8080:8080'
-    user: '${AIRFLOW_UID:-50000}:0'
-    volumes: *airflow-common-volumes
-    depends_on:
-      <<: *airflow-common-dependencies

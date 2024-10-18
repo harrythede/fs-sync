@@ -81,3 +81,14 @@ services:
       AIRFLOW_PASSWORD: harry@2024
       AIRFLOW_USERNAME: harry
       AIRFLOW_EMAIL: harrytran001221@gmail.com
+  sftp-server:
+    image: sftp-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+      replicas: 2
+    environment:
+      SFTP_USERS: 'harry:harry@2024:1001'
+    volumes:
+      - ${PROJECT_DIR:-.}/sftp-server/sshd_config:/etc/ssh/sshd_config

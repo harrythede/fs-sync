@@ -2,10 +2,12 @@ import pendulum
 from airflow.decorators import dag
 from airflow.providers.ssh.operators.ssh import SSHOperator
 
+from common.constant import DEFAULT_ARGS
+
 
 @dag(
-    dag_id="sftp_rsync",
-    default_args={"owner": "harry"},
+    dag_id="fs_sync_rsync",
+    default_args=DEFAULT_ARGS,
     schedule="0 * * * *",
     start_date=pendulum.datetime(2024, 1, 1, tz="Asia/Ho_Chi_Minh"),
     catchup=False,

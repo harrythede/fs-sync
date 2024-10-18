@@ -76,6 +76,8 @@ services:
   airflow:
     <<: *airflow-common
     image: bitnami/airflow:2.10.2-debian-12-r0
+    ports:
+      - '8080:8080'
     environment:
       <<: *airflow-common-environment
       AIRFLOW_PASSWORD: harry@2024
@@ -89,6 +91,6 @@ services:
         delay: 30s
       replicas: 2
     environment:
-      SFTP_USERS: 'harry:harry@2024:1001'
+      SFTP_USERS: 'harry:harry@2024:1000:1000:sync-dir'
     volumes:
       - ${PROJECT_DIR:-.}/sftp-server/sshd_config:/etc/ssh/sshd_config

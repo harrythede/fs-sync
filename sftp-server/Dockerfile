@@ -1,3 +1,3 @@
 FROM atmoz/sftp:alpine
 
-RUN apk add --update --no-cache openssh-client rsync
+RUN apk add --update --no-cache openssh sshpass rsync

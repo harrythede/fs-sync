@@ -91,6 +91,4 @@ services:
         delay: 30s
       replicas: 2
     environment:
-      SFTP_USERS: 'harry:harry@2024:1000:1000:sync-dir'
-    volumes:
-      - ${PROJECT_DIR:-.}/sftp-server/sshd_config:/etc/ssh/sshd_config
+      SFTP_USERS: 'harry:harry@2024:1000:1000'

@@ -14,9 +14,12 @@ X11Forwarding no
 AllowTcpForwarding no
 
 # Force sftp and chroot jail
-#Subsystem sftp internal-sftp
+Subsystem sftp internal-sftp
 #ForceCommand internal-sftp
 #ChrootDirectory %h
 
 # Enable this for more logs
 #LogLevel VERBOSE
+
+# Accept environment variables
+AcceptEnv RCLONE_*

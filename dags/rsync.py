@@ -17,10 +17,10 @@ def sftp_rsync():
 
     SSHOperator(
         task_id="rsync",
-        ssh_conn_id="sftp_target_conn",
-        command="sshpass -p {{ conn.sftp_source_conn.password }} " 
+        ssh_conn_id="sftp_source_conn",
+        command="sshpass -p {{ conn.sftp_target_conn.password }} " 
                 "rsync -e 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' -azP "
-                "{{ conn.sftp_source_conn.login }}@{{ conn.sftp_source_conn.host }}:{{ var.value.sync_path }}/ {{ var.value.sync_path }}",
+                "{{ conn.sftp_target_conn.login }}@{{ conn.sftp_target_conn.host }}:{{ var.value.sync_path }}/ {{ var.value.sync_path }}",
         conn_timeout=None,
         cmd_timeout=None,
         skip_on_exit_code=None,

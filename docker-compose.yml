@@ -66,7 +66,7 @@ services:
       retries: 50
   airflow-worker:
     <<: *airflow-common
-    image: bitnami/airflow-worker:2.10.2-debian-12-r0
+    image: airflow-worker-rclone:2.10.2-debian-12-r0
     deploy:
       <<: *airflow-common-deployment
       replicas: 2

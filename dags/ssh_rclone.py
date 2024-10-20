@@ -18,7 +18,7 @@ def ssh_rclone():
         task_id="ssh_rclone",
         ssh_conn_id="sftp_source_conn",
         source_name="",
-        source_path="{{ var.value.fs_sync_path }}/",
+        source_path="{{ var.value.fs_sync_source_path }}",
         target_name="target",
         target_config={
             "type": "sftp",
@@ -26,7 +26,7 @@ def ssh_rclone():
             "user": "{{ conn.sftp_target_conn.login }}",
             "pass": "{{ conn.sftp_target_conn.password }}",
         },
-        target_path="{{ var.value.fs_sync_path }}",
+        target_path="{{ var.value.fs_sync_target_path }}",
         secret_target_fields=["pass"],
         conn_timeout=None,
         cmd_timeout=None,

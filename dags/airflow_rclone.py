@@ -26,4 +26,20 @@ def rclone():
         target_path="{{ var.value.fs_sync_target_path }}",
     )
 
+    RCloneOperator(
+        task_id="rclone_s3",
+        source_name="sourcesftp",
+        source_conn_id="sftp_source_conn",
+        source_conn_type="sftp",
+        source_path="{{ var.value.fs_sync_source_path }}",
+        target_name="targets3",
+        target_conn_id="s3_target_conn",
+        target_conn_type="s3",
+        target_path="{{ var.value.fs_sync_target_s3_bucket }}",
+        target_extra_config={
+            "provider": "Minio",
+            "endpoint": "{{ conn.s3_target_conn.extra_dejson['endpoint_url'] }}",
+        }
+    )
+
 dag = rclone()

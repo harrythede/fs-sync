@@ -71,7 +71,7 @@ class RCloneOperator(BaseOperator):
             config = {
                 rclone_config_remote_prefix + "_TYPE": "s3",
                 rclone_config_remote_prefix + "_ACCESS_KEY_ID": f"{{{{ conn.{conn_id}.login }}}}",
-                rclone_config_remote_prefix + "_SECRET_ACCESS_KEY": f"$(rclone obscure {{{{ conn.{conn_id}.password }}}})",
+                rclone_config_remote_prefix + "_SECRET_ACCESS_KEY": f"{{{{ conn.{conn_id}.password }}}}",
             }
 
         if extra_config is not None:
@@ -88,6 +88,4 @@ class RCloneOperator(BaseOperator):
             self.log.info("Stdout: %s", result.stdout)
             return result.returncode, result.stdout, result.stderr
         except CalledProcessError as e:
-            self.log.error("Return code: %d", e.returncode)
-            self.log.error("Stderr: %s", e.stderr)
             raise e

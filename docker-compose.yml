@@ -133,7 +133,7 @@ services:
     volumes:
       - ${PROJECT_DIR:-.}/data/minio/data4-1:/data1
       - ${PROJECT_DIR:-.}/data/minio/data4-2:/data2
-  nginx:
+  minio:
     image: nginx:1.19.2-alpine
     hostname: nginx
     volumes:
